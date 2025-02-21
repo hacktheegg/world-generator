@@ -2,6 +2,7 @@
 #include <array>
 #include <vector>
 #include <chrono>
+#include <GLFW/glfw3.h>
 
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
@@ -11,6 +12,7 @@ unsigned int numOfRNGCalls = 0;
 
 int getTimeMillisec()
 {
+    return 5;
     // TODO
 }
 

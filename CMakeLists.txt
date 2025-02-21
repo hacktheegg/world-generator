@@ -16,12 +16,9 @@ ENDIF()
 
 
 
-
-
-
-
+add_subdirectory("./libraries/glfw")
 
 
 
 add_executable("world-generator" "./src/main.cpp")
-target_link_libraries(world-generator)
+target_link_libraries(world-generator glfw)
