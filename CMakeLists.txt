@@ -16,9 +16,11 @@ ENDIF()
 
 
 
+include_directories("./libraries/glad/include/")
+
 add_subdirectory("./libraries/glfw")
 
 
 
-add_executable("world-generator" "./src/main.cpp")
+add_executable("world-generator" "./src/main.cpp" "./libraries/glad/src/glad.c")
 target_link_libraries(world-generator glfw)
