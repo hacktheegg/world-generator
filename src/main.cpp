@@ -13,10 +13,9 @@ std::array<unsigned int, 2> worldDimensions;
 unsigned char RNGIncrementor = 11; // A nice prime number
 unsigned int numOfRNGCalls = 0;
 
-int getTimeMillisec()
-{
-    return 5;
-    // TODO
+uint64_t getTimeMillisec() {
+  using namespace std::chrono;
+  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
 
 unsigned int RNG(unsigned int high)
