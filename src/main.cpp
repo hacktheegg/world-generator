@@ -8,7 +8,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-const float pi = 3.14159265
+const float pi = 3.14159265;
 
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
@@ -32,14 +32,14 @@ std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsign
   std::vector<std::vector<unsigned char>> noiseMap = {};
 
   // initialise noiseMap a matrix of 0's
-  std::vector<unsigned char>> tempVec = {};
+  std::vector<unsigned char> tempVec = {};
   for (unsigned int i = 0; i < height; i++)
   {
     for (unsigned int ii = 0; i < width; i++)
     {
-      tempVec.append(0);
+      tempVec.push_back(0);
     }
-    noiseMap.append(tempVec);
+    noiseMap.push_back(tempVec);
     tempVec = {};
   }
   
@@ -88,6 +88,7 @@ int main()
   glfwMakeContextCurrent(window);
 
 
+
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
@@ -100,6 +101,14 @@ int main()
 
 
   glViewport(0, 0, 800, 600);
+
+
+
+  float vertices[] = {
+    -0.5f, -0.5f, 0.0f,
+     0.5f, -0.5f, 0.0f,
+     0.0f,  0.5f, 0.0f
+  };
 
 
 
