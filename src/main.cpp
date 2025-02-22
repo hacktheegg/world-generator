@@ -20,8 +20,8 @@ uint64_t getTimeMillisec() {
 
 unsigned int RNG(unsigned int high)
 {
-    auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
-    return (seed*seed + seed) % high;
+  auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
+  return (seed*seed + seed) % high;
 }
 
 
@@ -29,6 +29,13 @@ unsigned int RNG(unsigned int high)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
+
+void processInput(GLFWwindow *window) {
+  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, true);
+  }
+}
+
 
 
 
