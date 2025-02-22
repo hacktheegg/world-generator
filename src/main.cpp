@@ -15,10 +15,10 @@ const float pi = 3.14159265;
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
 
-unsigned char RNGIncrementor = 11; // A nice prime number
 unsigned int numOfRNGCalls = 0;
 
-uint64_t getTimeMillisec() {
+uint64_t getTimeMillisec() 
+{
   using namespace std::chrono;
   return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
 }
@@ -44,19 +44,7 @@ unsigned int RNG(unsigned int high)
 
 ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
 {
-  ByteMatrix noiseMap = {};
-
-  // initialise noiseMap a matrix of 0's
-  std::vector<unsigned char> tempVec = {};
-  for (unsigned int i = 0; i < height; i++)
-  {
-    for (unsigned int ii = 0; ii < width; ii++)
-    {
-      tempVec.push_back(0);
-    }
-    noiseMap.push_back(tempVec);
-    tempVec = {};
-  }
+  ByteMatrix noiseMap(height, std::vector<unsigned char>(width, 0)); // initialise noiseMap a matrix of 0's
   
   // place bright spots on noiseMap
   for (unsigned long i = 0; i < density*width*height; i++)
