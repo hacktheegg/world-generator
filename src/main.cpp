@@ -86,6 +86,15 @@ void printMatrixInTerminal(ByteMatrix matrix)
   }
 }
 
+
+
+
+// Shape Drawing Functions //
+void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, std::array<unsigned char, 3> RGB)
+{
+  // TODO
+}
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
