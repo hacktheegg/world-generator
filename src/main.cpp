@@ -5,8 +5,10 @@
 #include <array>
 #include <vector>
 #include <chrono>
+#include <math.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+using ByteMatrix = std::vector<std::vector<unsigned char>>;
 
 const float pi = 3.14159265;
 
@@ -23,19 +25,32 @@ uint64_t getTimeMillisec() {
 
 unsigned int RNG(unsigned int high)
 {
-  auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
-  return (seed*seed + seed) % high;
+    unsigned int seed = getTimeMillisec() * numOfRNGCalls;
+    numOfRNGCalls += 1;
+    for (int i = 0; i < 3; i++)
+    {
+      if (!(seed % 2))
+      {
+        seed /= 2;
+      }
+      else
+      {
+        seed *= 3;
+        seed += 1;
+      }
+    }
+    return (seed % high);
 }
 
-std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
+ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
 {
-  std::vector<std::vector<unsigned char>> noiseMap = {};
+  ByteMatrix noiseMap = {};
 
   // initialise noiseMap a matrix of 0's
   std::vector<unsigned char> tempVec = {};
   for (unsigned int i = 0; i < height; i++)
   {
-    for (unsigned int ii = 0; i < width; i++)
+    for (unsigned int ii = 0; ii < width; ii++)
     {
       tempVec.push_back(0);
     }
@@ -44,12 +59,31 @@ std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsign
   }
   
   // place bright spots on noiseMap
-  for (unsigned long i; i < (long double)(density*width*height); i++)
+  for (unsigned long i = 0; i < density*width*height; i++)
   {
-    tempVec[RNG(width), RNG(height)] = 1.0f;
+    noiseMap[RNG(height)][RNG(width)] = 0xFF;
   }
   
   return noiseMap;
+}
+
+void printMatrixInTerminal(ByteMatrix matrix)
+{
+  for(auto& line : matrix)
+  {
+    for (auto num : line)
+    {
+      if (num == 0)
+      {
+        std::cout << "  ";
+      }
+      else
+      {
+        std::cout << "# ";
+      }
+    }
+    std::cout << std::endl;
+  }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -84,6 +118,7 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
+  printMatrixInTerminal(generateNoise(183,81,0.01));
 
 
 
