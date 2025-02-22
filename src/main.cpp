@@ -5,6 +5,7 @@
 #include <array>
 #include <vector>
 #include <chrono>
+#include <math.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
@@ -24,8 +25,21 @@ uint64_t getTimeMillisec() {
 
 unsigned int RNG(unsigned int high)
 {
-  auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
-  return (seed*seed + seed) % high;
+    unsigned int seed = getTimeMillisec() * numOfRNGCalls;
+    numOfRNGCalls += 1;
+    for (int i = 0; i < 3; i++)
+    {
+      if (!(seed % 2))
+      {
+        seed /= 2;
+      }
+      else
+      {
+        seed *= 3;
+        seed += 1;
+      }
+    }
+    return (seed % high);
 }
 
 ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
@@ -47,12 +61,8 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
   // place bright spots on noiseMap
   for (unsigned long i = 0; i < density*width*height; i++)
   {
-    auto x = RNG(width);
-    auto y = RNG(height);
-    std::cout << x << ',' << y << std::endl;
-    tempVec[RNG(width), RNG(height)] = 0xFF;
+    noiseMap[RNG(height)][RNG(width)] = 0xFF;
   }
-  std::cout << "skipped?" << std::endl;
   
   return noiseMap;
 }
@@ -93,7 +103,7 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
-  printMatrixInTerminal(generateNoise(20,20,0.2));
+  printMatrixInTerminal(generateNoise(183,81,0.01));
 
 
 
