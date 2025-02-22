@@ -8,6 +8,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
+const float pi = 3.14159265
+
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
 
@@ -25,7 +27,30 @@ unsigned int RNG(unsigned int high)
   return (seed*seed + seed) % high;
 }
 
+std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
+{
+  std::vector<std::vector<unsigned char>> noiseMap = {};
 
+  // initialise noiseMap a matrix of 0's
+  std::vector<unsigned char>> tempVec = {};
+  for (unsigned int i = 0; i < height; i++)
+  {
+    for (unsigned int ii = 0; i < width; i++)
+    {
+      tempVec.append(0);
+    }
+    noiseMap.append(tempVec);
+    tempVec = {};
+  }
+  
+  // place bright spots on noiseMap
+  for (unsigned long i; i < (long double)(density*width*height); i++)
+  {
+    tempVec[RNG(width), RNG(height)] = 1.0f;
+  }
+  
+  return noiseMap;
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
