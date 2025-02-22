@@ -78,6 +78,8 @@ int main()
 
 
   while(!glfwWindowShouldClose(window)) {
+    processInput(window);
+
     glfwSwapBuffers(window);
     glfwPollEvents();    
   }
