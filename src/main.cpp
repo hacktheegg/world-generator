@@ -1,5 +1,6 @@
 // https://learnopengl.com/Getting-started/Hello-Window
 
+#include <cmath>
 #include <iostream>
 #include <array>
 #include <vector>
@@ -22,8 +23,8 @@ uint64_t getTimeMillisec() {
 
 unsigned int RNG(unsigned int high)
 {
-    auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
-    return (seed*seed + seed) % high;
+  auto seed = getTimeMillisec() + RNGIncrementor*numOfRNGCalls;
+  return (seed*seed + seed) % high;
 }
 
 std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
@@ -54,6 +55,13 @@ std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsign
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
+
+void processInput(GLFWwindow *window) {
+  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+    glfwSetWindowShouldClose(window, true);
+  }
+}
+
 
 
 
@@ -96,6 +104,15 @@ int main()
 
 
   while(!glfwWindowShouldClose(window)) {
+    processInput(window);
+
+    glClearColor(
+      sin(glfwGetTime()*3.14f*1),
+      sin(glfwGetTime()*3.14f*2),
+      sin(glfwGetTime()*3.14f*3),
+      1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
     glfwSwapBuffers(window);
     glfwPollEvents();    
   }
