@@ -1,5 +1,6 @@
 // https://learnopengl.com/Getting-started/Hello-Window
 
+#include <cmath>
 #include <iostream>
 #include <array>
 #include <vector>
@@ -79,6 +80,13 @@ int main()
 
   while(!glfwWindowShouldClose(window)) {
     processInput(window);
+
+    glClearColor(
+      sin(glfwGetTime()*3.14f*1),
+      sin(glfwGetTime()*3.14f*2),
+      sin(glfwGetTime()*3.14f*3),
+      1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
 
     glfwSwapBuffers(window);
     glfwPollEvents();    
