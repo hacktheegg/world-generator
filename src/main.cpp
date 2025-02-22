@@ -82,11 +82,13 @@ int main()
     processInput(window);
 
     glClearColor(
-      sin(glfwGetTime()*3.14f*1),
-      sin(glfwGetTime()*3.14f*2),
-      sin(glfwGetTime()*3.14f*3),
+      (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f, // red
+      (sin(glfwGetTime()+(3.14f/3*2))+1.0f)/2.0f, // green
+      (sin(glfwGetTime()+(3.14f/3*1))+1.0f)/2.0f, // blue
       1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+    // std::cout << "sin: " << (sin(glfwGetTime())+1.0f)/2.0f << std::endl;
 
     glfwSwapBuffers(window);
     glfwPollEvents();    
