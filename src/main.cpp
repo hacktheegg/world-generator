@@ -7,6 +7,7 @@
 #include <chrono>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+using ByteMatrix = std::vector<std::vector<unsigned char>>;
 
 const float pi = 3.14159265;
 
@@ -27,15 +28,15 @@ unsigned int RNG(unsigned int high)
   return (seed*seed + seed) % high;
 }
 
-std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
+ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
 {
-  std::vector<std::vector<unsigned char>> noiseMap = {};
+  ByteMatrix noiseMap = {};
 
   // initialise noiseMap a matrix of 0's
   std::vector<unsigned char> tempVec = {};
   for (unsigned int i = 0; i < height; i++)
   {
-    for (unsigned int ii = 0; i < width; i++)
+    for (unsigned int ii = 0; ii < width; ii++)
     {
       tempVec.push_back(0);
     }
@@ -44,12 +45,35 @@ std::vector<std::vector<unsigned char>> generateNoise(unsigned int width, unsign
   }
   
   // place bright spots on noiseMap
-  for (unsigned long i; i < (long double)(density*width*height); i++)
+  for (unsigned long i = 0; i < density*width*height; i++)
   {
-    tempVec[RNG(width), RNG(height)] = 1.0f;
+    auto x = RNG(width);
+    auto y = RNG(height);
+    std::cout << x << ',' << y << std::endl;
+    tempVec[RNG(width), RNG(height)] = 0xFF;
   }
+  std::cout << "skipped?" << std::endl;
   
   return noiseMap;
+}
+
+void printMatrixInTerminal(ByteMatrix matrix)
+{
+  for(auto& line : matrix)
+  {
+    for (auto num : line)
+    {
+      if (num == 0)
+      {
+        std::cout << "  ";
+      }
+      else
+      {
+        std::cout << "# ";
+      }
+    }
+    std::cout << std::endl;
+  }
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
@@ -69,6 +93,7 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
+  printMatrixInTerminal(generateNoise(20,20,0.2));
 
 
 
