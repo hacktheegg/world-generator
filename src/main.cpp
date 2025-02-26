@@ -42,7 +42,7 @@ unsigned int RNG(unsigned int high)
     return (seed % high);
 }
 
-ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 0)
+ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 3)
 {
   ByteMatrix noiseMap(height, std::vector<unsigned char>(width, 0)); // initialise noiseMap a matrix of 0's
   
@@ -51,6 +51,60 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
   {
     noiseMap[RNG(height)][RNG(width)] = 0xFF;
   }
+  
+  // Apply blur
+  float brightnessWeight = 0.0f; // How much pixels that make the blur brighter are favoured // TODO
+  unsigned short localBrightnessSum;
+
+  while (smoothness > 1)
+  {
+    // Blur horizontally //
+    for (unsigned int y = 0; y < height; y++)
+    {
+      for (unsigned int x = 0; x < std::ceil(width/smoothness); x++)
+      {
+        for (unsigned int i = 0; i < smoothness; i++)
+        {
+          if (x*smoothness+i > width) 
+          {
+            localBrightnessSum += localBrightnessSum / i; // To prevent pixels being too dim after the average is set
+            break; // Slightly hacky but works theoretically (i havent tested it)
+          }
+          localBrightnessSum += noiseMap[y][x*smoothness+i];
+        }
+        for (unsigned int i = 0; i < smoothness; i++)
+        {
+          noiseMap[y][x*smoothness+i] = localBrightnessSum / smoothness; 
+        }
+        localBrightnessSum = 0;
+      }
+    }
+    
+    // Blur vertically //
+    for (unsigned int x = 0; x < width; x++)
+    {
+      for (unsigned int y = 0; y < std::ceil(height/smoothness); y++)
+      {
+        for (unsigned int i = 0; i < smoothness; i++)
+        {
+          if (y*smoothness+i > height) 
+          {
+            localBrightnessSum += localBrightnessSum / i; // 
+            break; // 
+          }
+          localBrightnessSum += noiseMap[y*smoothness+i][x];
+        }
+        for (unsigned int i = 0; i < smoothness; i++)
+        {
+          noiseMap[y*smoothness+i][x] = localBrightnessSum / smoothness; 
+        }
+        localBrightnessSum = 0;
+      }
+    }
+    
+    smoothness -= 1;
+  }
+  // END of blur code //
   
   return noiseMap;
 }
@@ -61,14 +115,7 @@ void printMatrixInTerminal(ByteMatrix matrix)
   {
     for (auto num : line)
     {
-      if (num == 0)
-      {
-        std::cout << "  ";
-      }
-      else
-      {
-        std::cout << "# ";
-      }
+      std::cout << (int)num+1 << ' ';
     }
     std::cout << std::endl;
   }
@@ -115,7 +162,7 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
-  printMatrixInTerminal(generateNoise(183,81,0.01));
+  printMatrixInTerminal(generateNoise(83,181,0.01, 5));
 
 
 
