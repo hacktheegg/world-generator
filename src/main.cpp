@@ -17,15 +17,16 @@ std::array<unsigned int, 2> worldDimensions;
 
 unsigned int numOfRNGCalls = 0;
 
-uint64_t getTimeMillisec() 
+uint64_t getTimeMicrosec() 
 {
   using namespace std::chrono;
-  return duration_cast<milliseconds>(system_clock::now().time_since_epoch()).count();
+  return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
 }
+
 
 unsigned int RNG(unsigned int high)
 {
-    unsigned int seed = getTimeMillisec() * numOfRNGCalls;
+    unsigned int seed = getTimeMicrosec() * numOfRNGCalls;
     numOfRNGCalls += 1;
     for (int i = 0; i < 3; i++)
     {
@@ -56,7 +57,7 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
   float brightnessWeight = 0.0f; // How much pixels that make the blur brighter are favoured // TODO
   unsigned short localBrightnessSum;
 
-  while (smoothness > 1)
+  while (smoothness > 1) // TODO: Add random variation to values
   {
     // Blur horizontally //
     for (unsigned int y = 0; y < height; y++)
