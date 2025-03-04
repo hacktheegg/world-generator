@@ -253,7 +253,7 @@ int main()
   glViewport(0, 0, 800, 600);
 
 
-  std::cout << filepath::hello() << std::endl;
+  std::cout << filepath::exePath() << std::endl;
 
 
   while(!glfwWindowShouldClose(window)) {

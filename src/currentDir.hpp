@@ -5,7 +5,7 @@
 #include <string>
 
 namespace filepath {
-  std::string hello() {
+  std::string exePath() {
 #if defined (_MSC_VER)
     wchar_t path[FILENAME_MAX] = { 0 };
     GetModuleFileNameW(nullptr, path, FILENAME_MAX);
