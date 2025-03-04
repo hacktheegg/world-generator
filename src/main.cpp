@@ -9,8 +9,11 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
+using RGBColour = std::array<unsigned char, 3>;
 
 const float pi = 3.14159265;
+const float e = 2.718281828;
+const float pie = pi + e; // I *promise* to use this!
 
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
@@ -57,7 +60,7 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
   float brightnessWeight = 0.0f; // How much pixels that make the blur brighter are favoured // TODO
   unsigned short localBrightnessSum;
 
-  while (smoothness > 1) // TODO: Add random variation to values
+  while (smoothness > 1) 
   {
     // Blur horizontally //
     for (unsigned int y = 0; y < height; y++)
@@ -69,7 +72,7 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
           if (x*smoothness+i > width) 
           {
             localBrightnessSum += localBrightnessSum / i; // To prevent pixels being too dim after the average is set
-            break; // Slightly hacky but works theoretically (i havent tested it)
+            break; // Slightly hacky but works 
           }
           localBrightnessSum += noiseMap[y][x*smoothness+i];
         }
@@ -116,17 +119,26 @@ void printMatrixInTerminal(ByteMatrix matrix)
   {
     for (auto num : line)
     {
-      std::cout << (int)num+1 << ' ';
+      if (num < 9) std::cout << (int)num+1 << "   ";
+      else if (num < 99) std::cout << (int)num+1 << "  ";
+      else std::cout << (int)num+1 << ' ';
     }
     std::cout << std::endl;
   }
 }
 
+// Biome Classification stuff
+RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve func name
+{
+  if (pixelBrightness < 0x10) return {0, 80, 100}; // Water
+  if (pixelBrightness < 0x20) return {100, 20, 0}; // Beach
+  return {0, 120, 200}; // Land
+}
 
 
 
 // Shape Drawing Functions //
-void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, std::array<unsigned char, 3> RGB)
+void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, RGBColour RGB)
 {
   // TODO
 }
@@ -163,7 +175,7 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
-  printMatrixInTerminal(generateNoise(83,181,0.01, 5));
+  printMatrixInTerminal(generateNoise(63,127,0.08, 5));
 
 
 
