@@ -9,7 +9,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader_s.hpp"
-#include "currentDir.hpp"
+//#include "currentDir.hpp"
 
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
 using RGBColour = std::array<unsigned char, 3>;
@@ -146,6 +146,12 @@ void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> 
   // TODO
 }
 
+void drawCircle(std::array<unsigned int, 2> origin, unsigned int radius, RGBColour RGB) // low priority
+{
+  // TODO
+}
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
@@ -253,7 +259,7 @@ int main()
   glViewport(0, 0, 800, 600);
 
 
-  std::cout << filepath::exePath() << std::endl;
+  //std::cout << filepath::exePath() << std::endl;
 
 
   while(!glfwWindowShouldClose(window)) {
