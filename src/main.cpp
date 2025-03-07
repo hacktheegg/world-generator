@@ -21,6 +21,9 @@ const float pie = pi + e; // I *promise* to use this!
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
 
+std::array<long, 2> cameraPosition = {0,0}; // where the visible portion of the world is centred // TODO: implement
+unsigned int viewSize = 12; // The radius of the visible portion of the world (it's a rectangle...)
+
 unsigned int numOfRNGCalls = 0;
 
 uint64_t getTimeMicrosec() 
@@ -126,7 +129,34 @@ void printMatrixInTerminal(ByteMatrix matrix)
       else if (num < 99) std::cout << (int)num+1 << "  ";
       else std::cout << (int)num+1 << ' ';
     }
-    std::cout << std::endl;
+    std::cout << '\n';
+  }
+}
+
+void printCameraViewInTerminal(const ByteMatrix matrix)
+{
+  for (unsigned int i = 0; i < viewSize*2; i++)
+  {
+    long absPosY = cameraPosition[1] - viewSize + i;
+    
+    if (absPosY < 0 || absPosY > matrix.size()) // Draw the entire row blank if its outside the bounds
+    {
+      for (unsigned int n = 0; n < viewSize*2; n++) {std::cout << "0   ";}
+      std::cout << '\n';
+      continue;
+    } 
+
+    for (unsigned int j = 0; j < viewSize*2; j++)
+    {
+      long absPosX = cameraPosition[0] - viewSize + j;
+
+      if (absPosX < 0 || absPosX > matrix[0].size()) {std::cout << "0   "; continue;}
+      std::cout << (int)matrix[absPosY][absPosX] + 1;
+      if (matrix[absPosY][absPosX] < 9) std::cout << "   ";
+      else if (matrix[absPosY][absPosX] < 99) std::cout << "  ";
+      else std::cout << ' ';
+    }
+    std::cout << '\n';
   }
 }
 
@@ -137,7 +167,6 @@ RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve fun
   if (pixelBrightness < 0x20) return {100, 20, 0}; // Beach
   return {0, 120, 200}; // Land
 }
-
 
 
 // Shape Drawing Functions //
@@ -184,7 +213,36 @@ int main()
 {
   std::cout << "Hello, World!" << std::endl;
 
-  //printMatrixInTerminal(generateNoise(63,127,0.08, 5));
+  const ByteMatrix worldNoise = generateNoise(63,127,0.08, 5);
+  char c;
+  while (true)
+  {
+    system("cls");
+    system("clear"); // Jarrah, this is so it works in linux but the system("cls") might be making ur laptop scream idk. if problems fix! system("cls") is required for it to work in windows
+    printCameraViewInTerminal(worldNoise);
+    std::cout << "w||a||s||d to move, any other input to exit loop:\n";
+    std::cin >> c;
+    if (c == 'w')
+    {
+      cameraPosition[1] -= 1;
+    }
+    else if (c == 's')
+    {
+      cameraPosition[1] += 1;
+    }
+    else if (c == 'a')
+    {
+      cameraPosition[0] += 1;
+    }
+    else if (c == 'd')
+    {
+      cameraPosition[0] -= 1;
+    }
+    else
+    {
+      break;
+    }
+  }
 
 
 
