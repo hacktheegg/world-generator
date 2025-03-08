@@ -327,6 +327,13 @@ int main()
     // std::cout << "sin: " << (sin(glfwGetTime())+1.0f)/2.0f << std::endl;
   
 
+    vertices[(6*0)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
+    vertices[(6*1)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
+    vertices[(6*2)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
+    vertices[(6*3)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
 
     // draw our first triangle
     ourShader.use();
