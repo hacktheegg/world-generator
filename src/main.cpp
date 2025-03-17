@@ -9,6 +9,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "shader_s.hpp"
+#include "GLManager.hpp"
 //#include "currentDir.hpp"
 
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
