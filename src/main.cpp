@@ -26,7 +26,7 @@ unsigned int viewSize = 12; // The radius of the visible portion of the world (i
 
 unsigned int numOfRNGCalls = 0;
 
-uint64_t getTimeMicrosec() 
+uint64_t getTimeMicrosec()
 {
   using namespace std::chrono;
   return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
@@ -55,18 +55,18 @@ unsigned int RNG(unsigned int high)
 ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 3)
 {
   ByteMatrix noiseMap(height, std::vector<unsigned char>(width, 0)); // initialise noiseMap a matrix of 0's
-  
+
   // place bright spots on noiseMap
   for (unsigned long i = 0; i < density*width*height; i++)
   {
     noiseMap[RNG(height)][RNG(width)] = 0xFF;
   }
-  
+
   // Apply blur
   float brightnessWeight = 0.0f; // How much pixels that make the blur brighter are favoured // TODO
   unsigned short localBrightnessSum;
 
-  while (smoothness > 1) 
+  while (smoothness > 1)
   {
     // Blur horizontally //
     for (unsigned int y = 0; y < height; y++)
@@ -75,21 +75,21 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
       {
         for (unsigned int i = 0; i < smoothness; i++)
         {
-          if (x*smoothness+i > width) 
+          if (x*smoothness+i > width)
           {
             localBrightnessSum += localBrightnessSum / i; // To prevent pixels being too dim after the average is set
-            break; // Slightly hacky but works 
+            break; // Slightly hacky but works
           }
           localBrightnessSum += noiseMap[y][x*smoothness+i];
         }
         for (unsigned int i = 0; i < smoothness; i++)
         {
-          noiseMap[y][x*smoothness+i] = localBrightnessSum / smoothness; 
+          noiseMap[y][x*smoothness+i] = localBrightnessSum / smoothness;
         }
         localBrightnessSum = 0;
       }
     }
-    
+
     // Blur vertically //
     for (unsigned int x = 0; x < width; x++)
     {
@@ -97,25 +97,25 @@ ByteMatrix generateNoise(unsigned int width, unsigned int height, float density 
       {
         for (unsigned int i = 0; i < smoothness; i++)
         {
-          if (y*smoothness+i > height) 
+          if (y*smoothness+i > height)
           {
-            localBrightnessSum += localBrightnessSum / i; // 
-            break; // 
+            localBrightnessSum += localBrightnessSum / i; //
+            break; //
           }
           localBrightnessSum += noiseMap[y*smoothness+i][x];
         }
         for (unsigned int i = 0; i < smoothness; i++)
         {
-          noiseMap[y*smoothness+i][x] = localBrightnessSum / smoothness; 
+          noiseMap[y*smoothness+i][x] = localBrightnessSum / smoothness;
         }
         localBrightnessSum = 0;
       }
     }
-    
+
     smoothness -= 1;
   }
   // END of blur code //
-  
+
   return noiseMap;
 }
 
@@ -138,13 +138,13 @@ void printCameraViewInTerminal(const ByteMatrix matrix)
   for (unsigned int i = 0; i < viewSize*2; i++)
   {
     long absPosY = cameraPosition[1] - viewSize + i;
-    
+
     if (absPosY < 0 || absPosY > matrix.size()) // Draw the entire row blank if its outside the bounds
     {
       for (unsigned int n = 0; n < viewSize*2; n++) {std::cout << "0   ";}
       std::cout << '\n';
       continue;
-    } 
+    }
 
     for (unsigned int j = 0; j < viewSize*2; j++)
     {
@@ -180,21 +180,17 @@ void drawCircle(std::array<unsigned int, 2> origin, unsigned int radius, RGBColo
   // TODO
 }
 
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
 void processInput(GLFWwindow *window) {
-  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
 }
 
-
-
-int main()
-{
+int main() {
   std::cout << "Hello, World!" << std::endl;
 
   /*
@@ -203,7 +199,9 @@ int main()
   while (true)
   {
     system("cls");
-    system("clear"); // Jarrah, this is so it works in linux but the system("cls") might be making ur laptop scream idk. if problems fix! system("cls") is required for it to work in windows
+    system("clear"); // Jarrah, this is so it works in linux but the
+  system("cls") might be making ur laptop scream idk. if problems fix!
+  system("cls") is required for it to work in windows
     printCameraViewInTerminal(worldNoise);
     std::cout << "w||a||s||d to move, any other input to exit loop:\n";
     std::cin >> c;
@@ -230,8 +228,6 @@ int main()
   }
   */
 
-
-
   // initialise GLFW
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -240,9 +236,9 @@ int main()
 #ifdef __APPLE__
   // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-  
+
   // initialise GLFW window
-  GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -261,97 +257,149 @@ int main()
   Shader ourShader("./shader.vert", "./shader.frag");
 
   // vertices and vertice attributes
-  float vertices[] = {
-    -0.75f, -0.75f, 0.0f, 1.00f, 0.50f, 0.00f,
-     0.00f, -0.75f, 0.0f, 1.00f, 0.50f, 0.00f,
-    -0.75f,  0.00f, 0.0f, 1.00f, 0.50f, 0.00f,
-     0.00f,  0.00f, 0.0f, 1.00f, 0.50f, 0.00f,
+  window::polygon poly(0);
+  /*
+  poly.addPoint(
+    window::point(
+      window::position(-0.75f, -0.75f, -0.75f, 1.00f),
+      window::colour(1.00f, 0.00f, 0.00f, 1.00f)
+    )
+  );
+  poly.addPoint(
+    window::point(
+      window::position(0.75f, -0.75f, -0.75f, 1.00f),
+      window::colour(0.00f, 1.00f, 0.00f, 1.00f)
+    )
+  );
+  poly.addPoint(
+    window::point(
+      window::position(0.75f, 0.75f, -0.75f, 1.00f),
+      window::colour(0.00f, 0.00f, 1.00f, 1.00f)
+    )
+  );
+  */
+  poly.addPoint(
+    window::point(
+      window::position(
+        0.00f,
+        0.00f,
+        0.00f,
+        1.00f
+      ),
+      window::colour(
+        0.00f,
+        0.00f,
+        1.00f,
+        1.00f
+      )
+    )
+  );
 
-     0.75f,  0.75f, 0.0f, 0.50f, 1.00f, 0.00f,
-     0.00f,  0.75f, 0.0f, 0.50f, 1.00f, 0.00f,
-     0.75f,  0.00f, 0.0f, 0.50f, 1.00f, 0.00f,
-     0.00f,  0.00f, 0.0f, 0.50f, 1.00f, 0.00f
-  };
-  unsigned int indices[] = {
-    0, 1, 2,
-    1, 2, 3,
-    4, 5, 6,
-    5, 6, 7
-  };  
+
+  float tmp = 360.00f;
+  for (float i = 0; i < pi*2; i+=pi/tmp) {
+    poly.addPoint(
+      window::point(
+        window::position(
+          sin(i),
+          cos(i),
+          0.00f,
+          1.00f
+        ),
+        window::colour(
+          sin(i),
+          cos(i),
+          0.00f,
+          1.00f
+        )
+      )
+    );
+  }
+
+  float* vertices = poly.getAllData();
+
+  unsigned int indices[poly.getSize()+1];
+  for (int i = 0; i < poly.getSize(); i++) {
+    indices[i] = i;
+  }
+  indices[poly.getSize()] = 0;
+
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and
+  // then configure vertex attributes(s).
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly.getSize() * 8, vertices,
+               GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly.getSize()+1), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3* sizeof(float)));
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(4 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
+  // note that this is allowed, the call to glVertexAttribPointer registered VBO
+  // as the vertex attribute's bound vertex buffer object so afterwards we can
+  // safely unbind
+  // glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-  // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-  //glBindVertexArray(0);
+  // You can unbind the VAO afterwards so other VAO calls won't accidentally
+  // modify this VAO, but this rarely happens. Modifying other VAOs requires a
+  // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
+  // VBOs) when it's not directly necessary.
+  // glBindVertexArray(0);
 
   // uncomment this call to draw in wireframe polygons.
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
+  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   glViewport(0, 0, 800, 600);
 
+  std::cout << "poly.getSize(): " << poly.getSize() << std::endl;
 
-  //std::cout << filepath::exePath() << std::endl;
+  // std::cout << filepath::exePath() << std::endl;
 
-
-  while(!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
-    glClearColor(
-      (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f, // red
-      (sin(glfwGetTime()+(3.14f/3*2))+1.0f)/2.0f, // green
-      (sin(glfwGetTime()+(3.14f/3*1))+1.0f)/2.0f, // blue
-      1.0f);
+    glClearColor((sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
+                 (sin(glfwGetTime() + (3.14f / 3 * 2)) + 1.0f) / 2.0f, // green
+                 (sin(glfwGetTime() + (3.14f / 3 * 1)) + 1.0f) / 2.0f, // blue
+                 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
     // std::cout << "sin: " << (sin(glfwGetTime())+1.0f)/2.0f << std::endl;
-  
-
-    vertices[(6*0)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
-    vertices[(6*1)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
-    vertices[(6*2)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
-    vertices[(6*3)+5] = (sin(glfwGetTime()+(3.14f/3*3))+1.0f)/2.0f;
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
 
     // draw our first triangle
     ourShader.use();
-    glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
-    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
     // glBindVertexArray(0); // no need to unbind it every time
-
-
+    glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+    glDrawElements(GL_TRIANGLE_FAN, poly.getSize(), GL_UNSIGNED_INT, 0);
+    // Modes (Swap out the first object given to glDrawElements
+    /*
+    * GL_POINTS
+    * GL_LINES
+    * GL_LINE_STRIP
+    * GL_SINE_LOOP
+    * GL_TRIANGLES
+    * GL_TRIANGLE_STRIP
+    * GL_TRIANGLE_FAN
+    * autocomplete says there are others as well
+    */
 
     glfwSwapBuffers(window);
-    glfwPollEvents();    
+    glfwPollEvents();
   }
 
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
-
 
   glfwTerminate();
   return 0;
