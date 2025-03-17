@@ -229,6 +229,10 @@ int main() {
   }
   */
 
+
+
+
+
   // initialise GLFW
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -237,7 +241,6 @@ int main() {
 #ifdef __APPLE__
   // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-
   // initialise GLFW window
   GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
@@ -247,98 +250,53 @@ int main() {
   }
   glfwMakeContextCurrent(window);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
   // initialise GLAD function pointers
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
   }
 
+
+
+
+
   //// SHADERS ////
   Shader ourShader("./shader.vert", "./shader.frag");
-
   // vertices and vertice attributes
-  window::polygon poly(0);
-  /*
-  poly.addPoint(
+  window::polygon poly1(0);
+  poly1.addPoint(
     window::point(
-      window::position(-0.75f, -0.75f, -0.75f, 1.00f),
-      window::colour(1.00f, 0.00f, 0.00f, 1.00f)
+      window::position( 0.50f, 0.50f, 0.00f, 1.00f ),
+      window::colour( 0.00f, 0.00f, 0.50f, 1.00f )
     )
   );
-  poly.addPoint(
-    window::point(
-      window::position(0.75f, -0.75f, -0.75f, 1.00f),
-      window::colour(0.00f, 1.00f, 0.00f, 1.00f)
-    )
-  );
-  poly.addPoint(
-    window::point(
-      window::position(0.75f, 0.75f, -0.75f, 1.00f),
-      window::colour(0.00f, 0.00f, 1.00f, 1.00f)
-    )
-  );
-  */
-  poly.addPoint(
-    window::point(
-      window::position(
-        0.00f,
-        0.00f,
-        0.00f,
-        1.00f
-      ),
-      window::colour(
-        0.00f,
-        0.00f,
-        1.00f,
-        1.00f
-      )
-    )
-  );
-
-
   float tmp = 360.00f;
   for (float i = 0; i < pi*2; i+=pi/tmp) {
-    poly.addPoint(
+    poly1.addPoint(
       window::point(
-        window::position(
-          sin(i),
-          cos(i),
-          0.00f,
-          1.00f
-        ),
-        window::colour(
-          sin(i),
-          cos(i),
-          0.00f,
-          1.00f
-        )
+        window::position( (sin(i)+1)/2, (cos(i)+1)/2, 0.00f, 1.00f ),
+        window::colour( (sin(i)+1)/2, (cos(i)+1)/2, 0.00f, 1.00f )
       )
     );
   }
-
-  float* vertices = poly.getAllData();
-
-  unsigned int indices[poly.getSize()+1];
-  for (int i = 0; i < poly.getSize(); i++) {
+  float* vertices = poly1.getAllData();
+  unsigned int indices[poly1.getSize()+1];
+  for (int i = 0; i < poly1.getSize(); i++) {
     indices[i] = i;
   }
-  indices[poly.getSize()] = 0;
-
+  indices[poly1.getSize()] = 0;
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
   glGenBuffers(1, &EBO);
-  // bind the Vertex Array Object first, then bind and set vertex buffer(s), and
-  // then configure vertex attributes(s).
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly.getSize() * 8, vertices,
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly1.getSize() * 8, vertices,
                GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly.getSize()+1), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly1.getSize()+1), indices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
@@ -346,42 +304,31 @@ int main() {
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(4 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  // note that this is allowed, the call to glVertexAttribPointer registered VBO
-  // as the vertex attribute's bound vertex buffer object so afterwards we can
-  // safely unbind
-  // glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  // You can unbind the VAO afterwards so other VAO calls won't accidentally
-  // modify this VAO, but this rarely happens. Modifying other VAOs requires a
-  // call to glBindVertexArray anyways so we generally don't unbind VAOs (nor
-  // VBOs) when it's not directly necessary.
-  // glBindVertexArray(0);
-
   // uncomment this call to draw in wireframe polygons.
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   glViewport(0, 0, 800, 600);
 
-  std::cout << "poly.getSize(): " << poly.getSize() << std::endl;
+  std::cout << "poly.getSize(): " << poly1.getSize() << std::endl;
 
   // std::cout << filepath::exePath() << std::endl;
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
-
     glClearColor((sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
                  (sin(glfwGetTime() + (3.14f / 3 * 2)) + 1.0f) / 2.0f, // green
                  (sin(glfwGetTime() + (3.14f / 3 * 1)) + 1.0f) / 2.0f, // blue
                  1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-    // std::cout << "sin: " << (sin(glfwGetTime())+1.0f)/2.0f << std::endl;
+
+
+
 
 
     // draw our first triangle
     ourShader.use();
-    // glBindVertexArray(0); // no need to unbind it every time
-    glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-    glDrawElements(GL_TRIANGLE_FAN, poly.getSize(), GL_UNSIGNED_INT, 0);
+    glBindVertexArray(VAO);
+    glDrawElements(GL_TRIANGLE_FAN, poly1.getSize(), GL_UNSIGNED_INT, 0);
     // Modes (Swap out the first object given to glDrawElements
     /*
     * GL_POINTS
@@ -393,15 +340,17 @@ int main() {
     * GL_TRIANGLE_FAN
     * autocomplete says there are others as well
     */
-
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
 
+
+
+
+
   glDeleteVertexArrays(1, &VAO);
   glDeleteBuffers(1, &VBO);
   glDeleteBuffers(1, &EBO);
-
   glfwTerminate();
   return 0;
 }
