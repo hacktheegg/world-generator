@@ -8,8 +8,8 @@
 #include <math.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
-#include "shader_s.hpp"
-#include "GLManager.hpp"
+#include "glThings/shader_s.hpp"
+#include "glThings/GLManager.hpp"
 //#include "currentDir.hpp"
 
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
@@ -233,6 +233,11 @@ int main() {
 
 
 
+
+
+
+
+
   // initialise GLFW
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -242,7 +247,7 @@ int main() {
   // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
   // initialise GLFW window
-  GLFWwindow *window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(500, 500, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -260,31 +265,25 @@ int main() {
 
 
 
+
+
+
+
+
   //// SHADERS ////
   Shader ourShader("./shader.vert", "./shader.frag");
   // vertices and vertice attributes
-  window::polygon poly1(0);
-  poly1.addPoint(
-    window::point(
-      window::position( 0.50f, 0.50f, 0.00f, 1.00f ),
-      window::colour( 0.00f, 0.00f, 0.50f, 1.00f )
-    )
-  );
-  float tmp = 360.00f;
-  for (float i = 0; i < pi*2; i+=pi/tmp) {
-    poly1.addPoint(
-      window::point(
-        window::position( (sin(i)+1)/2, (cos(i)+1)/2, 0.00f, 1.00f ),
-        window::colour( (sin(i)+1)/2, (cos(i)+1)/2, 0.00f, 1.00f )
-      )
-    );
-  }
-  float* vertices = poly1.getAllData();
-  unsigned int indices[poly1.getSize()+1];
-  for (int i = 0; i < poly1.getSize(); i++) {
+  window::polygon poly(0);
+
+  // reference to polygon, x-pos, y-pos, radius, degrees start, degrees end, precision interval
+  shapes::create::circle(&poly, 0.00f, 0.00f, 0.90f, -180.00f, 180.00f, 1.00f);
+
+  float* vertices = poly.getAllData();
+  unsigned int indices[poly.getSize()+1];
+  for (int i = 0; i < poly.getSize(); i++) {
     indices[i] = i;
   }
-  indices[poly1.getSize()] = 0;
+  indices[poly.getSize()] = 0;
   unsigned int VBO, VAO, EBO;
   glGenVertexArrays(1, &VAO);
   glGenBuffers(1, &VBO);
@@ -292,11 +291,10 @@ int main() {
   glBindVertexArray(VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly1.getSize() * 8, vertices,
-               GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly.getSize() * 8, vertices, GL_STATIC_DRAW);
 
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly1.getSize()+1), indices, GL_STATIC_DRAW);
+  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly.getSize()+1), indices, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
@@ -305,21 +303,41 @@ int main() {
   glEnableVertexAttribArray(1);
 
   // uncomment this call to draw in wireframe polygons.
-  // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  glViewport(0, 0, 800, 600);
+  //glViewport(0, 0, 800, 600);
+  glViewport(0, 0, 500, 500);
 
-  std::cout << "poly.getSize(): " << poly1.getSize() << std::endl;
+  std::cout << "poly.getSize(): " << poly.getSize() << std::endl;
 
   // std::cout << filepath::exePath() << std::endl;
-
+  
+  int counter = 0;
+  u_int64_t lastCheck = 0;
   while (!glfwWindowShouldClose(window)) {
+    // Count Frames per Second
+    if ((lastCheck + (1*1000*1000)) < getTimeMicrosec()) {
+      std::cout << "frames this second: " << counter << std::endl;
+      counter = 0;
+      lastCheck = getTimeMicrosec();
+    } else {
+      counter++;
+    }
+
     processInput(window);
-    glClearColor((sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
-                 (sin(glfwGetTime() + (3.14f / 3 * 2)) + 1.0f) / 2.0f, // green
-                 (sin(glfwGetTime() + (3.14f / 3 * 1)) + 1.0f) / 2.0f, // blue
-                 1.0f);
+    glClearColor(
+      /*
+      (sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
+      (sin(glfwGetTime() + (3.14f / 3 * 2)) + 1.0f) / 2.0f, // green
+      (sin(glfwGetTime() + (3.14f / 3 * 1)) + 1.0f) / 2.0f, // blue
+      */
+      0.80f, 0.40, 0.20, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+
+
+
+
+
 
 
 
@@ -328,7 +346,7 @@ int main() {
     // draw our first triangle
     ourShader.use();
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLE_FAN, poly1.getSize(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLE_FAN, poly.getSize(), GL_UNSIGNED_INT, 0);
     // Modes (Swap out the first object given to glDrawElements
     /*
     * GL_POINTS
@@ -343,6 +361,11 @@ int main() {
     glfwSwapBuffers(window);
     glfwPollEvents();
   }
+
+
+
+
+
 
 
 

@@ -22,8 +22,8 @@ include_directories("${CMAKE_BINARY_DIR}/libraries/glad/include/")
 
 add_subdirectory("${CMAKE_BINARY_DIR}/libraries/glfw/")
 
-configure_file("${CMAKE_BINARY_DIR}/src/shader.vert" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-configure_file("${CMAKE_BINARY_DIR}/src/shader.frag" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+configure_file("${CMAKE_BINARY_DIR}/src/shaders/shader.vert" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
+configure_file("${CMAKE_BINARY_DIR}/src/shaders/shader.frag" "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 
 add_executable("world-generator" "${CMAKE_BINARY_DIR}/src/main.cpp" "${CMAKE_BINARY_DIR}/libraries/glad/src/glad.c")

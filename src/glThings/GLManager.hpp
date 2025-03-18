@@ -2,6 +2,7 @@
 #define GLMANAGER
 
 #include <algorithm>
+#include <math.h>
 
 namespace window {
 
@@ -172,9 +173,9 @@ public:
     return data;
   }
 
-private:
   position* pos;
   colour* col;
+private:
 };
 
 class polygon {
@@ -264,9 +265,45 @@ public:
     return size;
   }
 
-private:
   point* points;
+private:
   unsigned int size;
+
+};
+
+}
+
+namespace shapes {
+
+class create {
+public:
+
+  static void circle(window::polygon *poly, float x, float y, float radius, float startAngle, float endAngle, float precisionInterval) {
+
+    /*poly->addPoint(
+      window::point(
+        window::position( x, y, 0.00f, 1.00f ),
+        window::colour( 0.00f, 0.00f, 0.00f, 1.00f )
+      )
+    );*/
+
+    float j = 0;
+    float jModulator = 0;
+    for (float i = startAngle; i < endAngle; i+=precisionInterval) {
+      j = i-(360.00f*jModulator);
+      if (j > 360.00f) {
+        jModulator++;
+        j = i-(360.00f*jModulator);
+      }
+      poly->addPoint(
+        window::point(
+          window::position( x+(cos((j/180)*M_PI)*radius), y+(sin((j/180)*M_PI)*radius), 0.00f, 1.00f ),
+          window::colour( (1.00f+(cos((j/180)*M_PI)*radius))/2.00f, (1.00f+(sin((j/180)*M_PI)*radius))/2.00f, 0.00f, 1.00f )
+        )
+      );
+    }
+
+  };
 
 };
 
