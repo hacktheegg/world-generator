@@ -313,7 +313,7 @@ int main() {
   // std::cout << filepath::exePath() << std::endl;
   
   int counter = 0;
-  u_int64_t lastCheck = 0;
+  uint64_t lastCheck = 0;
   while (!glfwWindowShouldClose(window)) {
     // Count Frames per Second
     if ((lastCheck + (1*1000*1000)) < getTimeMicrosec()) {
