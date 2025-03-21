@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 11) # no explicit compiler flags if possible
 
 file(MAKE_DIRECTORY ./build/)
 
+set(CMAKE_CXX_STANDARD_LIBRARIES "-static-libgcc -static-libstdc++ ${CMAKE_CXX_STANDARD_LIBRARIES}")
+
 IF (WIN32)
   # set stuff for windows
   file(MAKE_DIRECTORY "./build/windows/")
