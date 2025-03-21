@@ -276,7 +276,10 @@ int main() {
   window::polygon poly(0);
 
   // reference to polygon, x-pos, y-pos, radius, degrees start, degrees end, precision interval
-  shapes::create::circle(&poly, 0.00f, 0.00f, 0.90f, -180.00f, 180.00f, 1.00f);
+  //shapes::create::circle(&poly, 0.00f, 0.00f, 0.90f, -180.00f, 180.00f, 1.00f);
+
+  // reference to polygon, x-pos point1, y-pos point1, x-pos point2, y-pos point2, colour
+  shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
 
   float* vertices = poly.getAllData();
   unsigned int indices[poly.getSize()+1];
@@ -346,7 +349,7 @@ int main() {
     // draw our first triangle
     ourShader.use();
     glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLE_FAN, poly.getSize(), GL_UNSIGNED_INT, 0);
+    glDrawElements(GL_TRIANGLES, poly.getSize(), GL_UNSIGNED_INT, 0);
     // Modes (Swap out the first object given to glDrawElements
     /*
     * GL_POINTS

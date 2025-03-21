@@ -277,6 +277,16 @@ namespace shapes {
 
 class create {
 public:
+  static void rectangle(window::polygon *poly, float x1, float y1, float x2, float y2, window::colour colour) {
+
+    poly->addPoint( window::point( window::position( x1, y1, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( x1, y2, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( x2, y1, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( x1, y2, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( x2, y1, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( x2, y2, 0.00f, 1.00f ), colour ) );
+
+  };
 
   static void circle(window::polygon *poly, float x, float y, float radius, float startAngle, float endAngle, float precisionInterval) {
 
