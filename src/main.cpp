@@ -173,7 +173,7 @@ RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve fun
 // Shape Drawing Functions //
 void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, RGBColour RGB)
 {
-  // TODO
+  shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
 }
 
 void drawCircle(std::array<unsigned int, 2> origin, unsigned int radius, RGBColour RGB) // low priority
