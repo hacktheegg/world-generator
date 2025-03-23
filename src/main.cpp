@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include "glThings/shader_s.hpp"
 #include "glThings/GLManager.hpp"
+//#include "funcs/funcs.hpp"
 //#include "currentDir.hpp"
 
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
@@ -173,7 +174,7 @@ RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve fun
 // Shape Drawing Functions //
 void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, RGBColour RGB)
 {
-  shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
+  //shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
 }
 
 void drawCircle(std::array<unsigned int, 2> origin, unsigned int radius, RGBColour RGB) // low priority
@@ -185,49 +186,30 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
+std::array<long, 2> processInput(GLFWwindow *window, std::array<long, 2> cameraPosition) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
   }
+  if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    cameraPosition[1] -= 1;
+  }
+  if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    cameraPosition[0] -= 1;
+  }
+  if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    cameraPosition[1] += 1;
+  }
+  if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    cameraPosition[0] += 1;
+  }
+  return cameraPosition;
 }
 
 int main() {
   std::cout << "Hello, World!" << std::endl;
 
-  /*
   const ByteMatrix worldNoise = generateNoise(63,127,0.08, 5);
   char c;
-  while (true)
-  {
-    system("cls");
-    system("clear"); // Jarrah, this is so it works in linux but the
-  system("cls") might be making ur laptop scream idk. if problems fix!
-  system("cls") is required for it to work in windows
-    printCameraViewInTerminal(worldNoise);
-    std::cout << "w||a||s||d to move, any other input to exit loop:\n";
-    std::cin >> c;
-    if (c == 'w')
-    {
-      cameraPosition[1] -= 1;
-    }
-    else if (c == 's')
-    {
-      cameraPosition[1] += 1;
-    }
-    else if (c == 'a')
-    {
-      cameraPosition[0] += 1;
-    }
-    else if (c == 'd')
-    {
-      cameraPosition[0] -= 1;
-    }
-    else
-    {
-      break;
-    }
-  }
-  */
 
 
 
@@ -247,7 +229,7 @@ int main() {
   // glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
   // initialise GLFW window
-  GLFWwindow *window = glfwCreateWindow(500, 500, "LearnOpenGL", NULL, NULL);
+  GLFWwindow *window = glfwCreateWindow(500, 500, "world-generator", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
@@ -308,13 +290,10 @@ int main() {
   // uncomment this call to draw in wireframe polygons.
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  //glViewport(0, 0, 800, 600);
-  glViewport(0, 0, 500, 500);
-
   std::cout << "poly.getSize(): " << poly.getSize() << std::endl;
 
   // std::cout << filepath::exePath() << std::endl;
-  
+
   int counter = 0;
   uint64_t lastCheck = 0;
   while (!glfwWindowShouldClose(window)) {
@@ -327,7 +306,19 @@ int main() {
       counter++;
     }
 
-    processInput(window);
+
+
+#ifdef _WIN32
+    system("cls");
+#elif __linux__
+    system("clear");
+#endif
+    printCameraViewInTerminal(worldNoise);
+    std::cout << "w||a||s||d to move, any other input to exit loop:\n";
+
+
+
+    cameraPosition = processInput(window, cameraPosition);
     glClearColor(
       /*
       (sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
