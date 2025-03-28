@@ -277,25 +277,31 @@ namespace shapes {
 
 class create {
 public:
-  static void rectangle(window::polygon *poly, float x1, float y1, float x2, float y2, window::colour colour) {
+  static void triangle(window::polygon *poly) {
 
-    poly->addPoint( window::point( window::position( x1, y1, 0.00f, 1.00f ), colour ) );
-    poly->addPoint( window::point( window::position( x1, y2, 0.00f, 1.00f ), colour ) );
-    poly->addPoint( window::point( window::position( x2, y1, 0.00f, 1.00f ), colour ) );
-    poly->addPoint( window::point( window::position( x1, y2, 0.00f, 1.00f ), colour ) );
-    poly->addPoint( window::point( window::position( x2, y1, 0.00f, 1.00f ), colour ) );
-    poly->addPoint( window::point( window::position( x2, y2, 0.00f, 1.00f ), colour ) );
+  }
 
+  static void rectangle(window::polygon *poly, window::position pos1, window::position pos2, window::colour colour) {
+
+    poly->addPoint( window::point( window::position( *pos1.x, *pos1.y, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( *pos1.x, *pos2.y, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( *pos2.x, *pos1.y, 0.00f, 1.00f ), colour ) );
+
+    poly->addPoint( window::point( window::position( *pos1.x, *pos2.y, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( *pos2.x, *pos1.y, 0.00f, 1.00f ), colour ) );
+    poly->addPoint( window::point( window::position( *pos2.x, *pos2.y, 0.00f, 1.00f ), colour ) );
   };
 
-  static void circle(window::polygon *poly, float x, float y, float radius, float startAngle, float endAngle, float precisionInterval) {
+  static void circle(window::polygon *poly, float x, float y, float radius, float startAngle, float endAngle, float precisionInterval, bool centrePoint) {
 
-    /*poly->addPoint(
-      window::point(
-        window::position( x, y, 0.00f, 1.00f ),
-        window::colour( 0.00f, 0.00f, 0.00f, 1.00f )
-      )
-    );*/
+    if (centrePoint) {
+      poly->addPoint(
+        window::point(
+          window::position( x, y, 0.00f, 1.00f ),
+          window::colour( 0.00f, 0.00f, 0.00f, 1.00f )
+        )
+      );
+    }
 
     float j = 0;
     float jModulator = 0;

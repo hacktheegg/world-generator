@@ -171,16 +171,6 @@ RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve fun
 }
 
 
-// Shape Drawing Functions //
-void drawSquare(std::array<unsigned int, 2> coord1, std::array<unsigned int, 2> coord2, RGBColour RGB)
-{
-  //shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
-}
-
-void drawCircle(std::array<unsigned int, 2> origin, unsigned int radius, RGBColour RGB) // low priority
-{
-  // TODO
-}
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
   glViewport(0, 0, width, height);
@@ -209,7 +199,6 @@ int main() {
   std::cout << "Hello, World!" << std::endl;
 
   const ByteMatrix worldNoise = generateNoise(63,127,0.08, 5);
-  char c;
 
 
 
@@ -254,32 +243,49 @@ int main() {
 
   //// SHADERS ////
   Shader ourShader("./shader.vert", "./shader.frag");
-  // vertices and vertice attributes
-  window::polygon poly(0);
+  unsigned int circleVAO, rectangleVAO, circleVBO, rectangleVBO;
 
-  // reference to polygon, x-pos, y-pos, radius, degrees start, degrees end, precision interval
-  //shapes::create::circle(&poly, 0.00f, 0.00f, 0.90f, -180.00f, 180.00f, 1.00f);
 
-  // reference to polygon, x-pos point1, y-pos point1, x-pos point2, y-pos point2, colour
-  shapes::create::rectangle(&poly, -0.50f, -0.50f, 0.50f, 0.50f, window::colour(0.10f, 0.10f, 0.70f, 1.00f));
 
-  float* vertices = poly.getAllData();
-  unsigned int indices[poly.getSize()+1];
-  for (int i = 0; i < poly.getSize(); i++) {
-    indices[i] = i;
-  }
-  indices[poly.getSize()] = 0;
-  unsigned int VBO, VAO, EBO;
-  glGenVertexArrays(1, &VAO);
-  glGenBuffers(1, &VBO);
-  glGenBuffers(1, &EBO);
-  glBindVertexArray(VAO);
 
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * poly.getSize() * 8, vertices, GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * (poly.getSize()+1), indices, GL_STATIC_DRAW);
+  glGenVertexArrays(1, &circleVAO);
+  glGenBuffers(1, &circleVBO);
+
+  glGenVertexArrays(1, &rectangleVAO);
+  glGenBuffers(1, &rectangleVBO);
+
+
+
+
+
+  window::polygon rectanglePoly(0);
+
+  shapes::create::rectangle(&rectanglePoly,
+    window::position(-0.50f, -0.50f, 0.00f, 1.00f),
+    window::position(-0.75f, -0.75f, 0.00f, 1.00f),
+    window::colour(0.20f, 0.40f, 0.80f, 1.00f)
+  );
+
+  float* rectangleVerts = rectanglePoly.getAllData();
+
+
+
+
+
+  window::polygon circlePoly(0);
+
+  shapes::create::circle(&circlePoly, 0.50f, 0.50f, 0.25f, 45.00f, 360.00f-45.00f, 0.10f, true);
+
+  float* circleVerts = circlePoly.getAllData();
+
+
+
+
+
+  glBindVertexArray(circleVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, circleVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * circlePoly.getSize() * 8, circleVerts, GL_STATIC_DRAW);
 
   glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
@@ -287,10 +293,27 @@ int main() {
   glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(4 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
+
+
+
+
+  glBindVertexArray(rectangleVAO);
+  glBindBuffer(GL_ARRAY_BUFFER, rectangleVBO);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(float) * rectanglePoly.getSize() * 8, rectangleVerts, GL_STATIC_DRAW);
+
+  glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)0);
+  glEnableVertexAttribArray(0);
+
+  glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(4 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+
+
   // uncomment this call to draw in wireframe polygons.
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  std::cout << "poly.getSize(): " << poly.getSize() << std::endl;
+  std::cout << "circlePoly.getSize(): " << circlePoly.getSize() << std::endl;
+  std::cout << "rectanglePoly.getSize(): " << rectanglePoly.getSize() << std::endl;
 
   // std::cout << filepath::exePath() << std::endl;
 
@@ -298,12 +321,14 @@ int main() {
   uint64_t lastCheck = 0;
   while (!glfwWindowShouldClose(window)) {
     // Count Frames per Second
-    if ((lastCheck + (1*1000*1000)) < getTimeMicrosec()) {
-      std::cout << "frames this second: " << counter << std::endl;
-      counter = 0;
-      lastCheck = getTimeMicrosec();
-    } else {
-      counter++;
+    if (false) {
+      if ((lastCheck + (1*1000*1000)) < getTimeMicrosec()) {
+        std::cout << "frames this second: " << counter << std::endl;
+        counter = 0;
+        lastCheck = getTimeMicrosec();
+      } else {
+        counter++;
+      }
     }
 
 
@@ -339,8 +364,13 @@ int main() {
 
     // draw our first triangle
     ourShader.use();
-    glBindVertexArray(VAO);
-    glDrawElements(GL_TRIANGLES, poly.getSize(), GL_UNSIGNED_INT, 0);
+
+    glBindVertexArray(circleVAO);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, circlePoly.getSize());
+
+    glBindVertexArray(rectangleVAO);
+    glDrawArrays(GL_TRIANGLES, 0, rectanglePoly.getSize());
+
     // Modes (Swap out the first object given to glDrawElements
     /*
     * GL_POINTS
@@ -365,9 +395,10 @@ int main() {
 
 
 
-  glDeleteVertexArrays(1, &VAO);
-  glDeleteBuffers(1, &VBO);
-  glDeleteBuffers(1, &EBO);
+  glDeleteVertexArrays(1, &circleVAO);
+  glDeleteVertexArrays(1, &rectangleVAO);
+  glDeleteBuffers(1, &circleVBO);
+  glDeleteBuffers(1, &rectangleVBO);
   glfwTerminate();
   return 0;
 }
