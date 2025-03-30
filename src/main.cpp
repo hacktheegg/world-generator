@@ -4,13 +4,12 @@
 #include <iostream>
 #include <array>
 #include <vector>
-#include <chrono>
 #include <math.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "glThings/shader_s.hpp"
 #include "glThings/GLManager.hpp"
-//#include "funcs/funcs.hpp"
+#include "funcs/funcs.hpp"
 //#include "currentDir.hpp"
 
 using ByteMatrix = std::vector<std::vector<unsigned char>>;
@@ -23,144 +22,20 @@ const float pie = pi + e; // I *promise* to use this!
 std::array<unsigned int, 2> windowDimensions;
 std::array<unsigned int, 2> worldDimensions;
 
-std::array<long, 2> cameraPosition = {0,0}; // where the visible portion of the world is centred // TODO: implement
-unsigned int viewSize = 12; // The radius of the visible portion of the world (it's a rectangle...)
-
-unsigned int numOfRNGCalls = 0;
-
-uint64_t getTimeMicrosec()
-{
-  using namespace std::chrono;
-  return duration_cast<microseconds>(high_resolution_clock::now().time_since_epoch()).count();
-}
 
 
-unsigned int RNG(unsigned int high)
-{
-    unsigned int seed = getTimeMicrosec() * numOfRNGCalls;
-    numOfRNGCalls += 1;
-    for (int i = 0; i < 3; i++)
-    {
-      if (!(seed % 2))
-      {
-        seed /= 2;
-      }
-      else
-      {
-        seed *= 3;
-        seed += 1;
-      }
-    }
-    return (seed % high);
-}
 
-ByteMatrix generateNoise(unsigned int width, unsigned int height, float density /*0 -> 1; allblack->all white*/, unsigned char smoothness = 3)
-{
-  ByteMatrix noiseMap(height, std::vector<unsigned char>(width, 0)); // initialise noiseMap a matrix of 0's
 
-  // place bright spots on noiseMap
-  for (unsigned long i = 0; i < density*width*height; i++)
-  {
-    noiseMap[RNG(height)][RNG(width)] = 0xFF;
-  }
-
-  // Apply blur
-  float brightnessWeight = 0.0f; // How much pixels that make the blur brighter are favoured // TODO
-  unsigned short localBrightnessSum;
-
-  while (smoothness > 1)
-  {
-    // Blur horizontally //
-    for (unsigned int y = 0; y < height; y++)
-    {
-      for (unsigned int x = 0; x < std::ceil(width/smoothness); x++)
-      {
-        for (unsigned int i = 0; i < smoothness; i++)
-        {
-          if (x*smoothness+i > width)
-          {
-            localBrightnessSum += localBrightnessSum / i; // To prevent pixels being too dim after the average is set
-            break; // Slightly hacky but works
-          }
-          localBrightnessSum += noiseMap[y][x*smoothness+i];
-        }
-        for (unsigned int i = 0; i < smoothness; i++)
-        {
-          noiseMap[y][x*smoothness+i] = localBrightnessSum / smoothness;
-        }
-        localBrightnessSum = 0;
-      }
-    }
-
-    // Blur vertically //
-    for (unsigned int x = 0; x < width; x++)
-    {
-      for (unsigned int y = 0; y < std::ceil(height/smoothness); y++)
-      {
-        for (unsigned int i = 0; i < smoothness; i++)
-        {
-          if (y*smoothness+i > height)
-          {
-            localBrightnessSum += localBrightnessSum / i; //
-            break; //
-          }
-          localBrightnessSum += noiseMap[y*smoothness+i][x];
-        }
-        for (unsigned int i = 0; i < smoothness; i++)
-        {
-          noiseMap[y*smoothness+i][x] = localBrightnessSum / smoothness;
-        }
-        localBrightnessSum = 0;
-      }
-    }
-
-    smoothness -= 1;
-  }
-  // END of blur code //
-
-  return noiseMap;
-}
-
-void printMatrixInTerminal(ByteMatrix matrix)
-{
-  for(auto& line : matrix)
-  {
-    for (auto num : line)
-    {
-      if (num < 9) std::cout << (int)num+1 << "   ";
-      else if (num < 99) std::cout << (int)num+1 << "  ";
-      else std::cout << (int)num+1 << ' ';
-    }
-    std::cout << '\n';
-  }
-}
-
+// MOVE TO funcs/funcs.hpp //
+/*
 void printCameraViewInTerminal(const ByteMatrix matrix)
 {
-  for (unsigned int i = 0; i < viewSize*2; i++)
-  {
-    long absPosY = cameraPosition[1] - viewSize + i;
-
-    if (absPosY < 0 || absPosY > matrix.size()) // Draw the entire row blank if its outside the bounds
-    {
-      for (unsigned int n = 0; n < viewSize*2; n++) {std::cout << "0   ";}
-      std::cout << '\n';
-      continue;
-    }
-
-    for (unsigned int j = 0; j < viewSize*2; j++)
-    {
-      long absPosX = cameraPosition[0] - viewSize + j;
-
-      if (absPosX < 0 || absPosX > matrix[0].size()) {std::cout << "0   "; continue;}
-      std::cout << (int)matrix[absPosY][absPosX] + 1;
-      if (matrix[absPosY][absPosX] < 9) std::cout << "   ";
-      else if (matrix[absPosY][absPosX] < 99) std::cout << "  ";
-      else std::cout << ' ';
-    }
-    std::cout << '\n';
-  }
 }
+*/
+
+
+
+
 
 // Biome Classification stuff
 RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve func name
@@ -169,6 +44,8 @@ RGBColour colourPixelByBiome(unsigned char pixelBrightness) // TODO: Improve fun
   if (pixelBrightness < 0x20) return {100, 20, 0}; // Beach
   return {0, 120, 200}; // Land
 }
+
+
 
 
 
@@ -198,7 +75,6 @@ std::array<long, 2> processInput(GLFWwindow *window, std::array<long, 2> cameraP
 int main() {
   std::cout << "Hello, World!" << std::endl;
 
-  const ByteMatrix worldNoise = generateNoise(63,127,0.08, 5);
 
 
 
@@ -317,15 +193,18 @@ int main() {
 
   // std::cout << filepath::exePath() << std::endl;
 
+  noiseMap::noiseMap worldNoise(63, 127, 0.25, 5, 12);
+  //misc::printByteMatrix(worldNoise.getMapVisible());
+
   int counter = 0;
   uint64_t lastCheck = 0;
   while (!glfwWindowShouldClose(window)) {
     // Count Frames per Second
     if (false) {
-      if ((lastCheck + (1*1000*1000)) < getTimeMicrosec()) {
-        std::cout << "frames this second: " << counter << std::endl;
+      if ((lastCheck + (1*1000*1000)) < misc::getTimeMicrosec()) {
+        //std::cout << "frames this second: " << counter << std::endl;
         counter = 0;
-        lastCheck = getTimeMicrosec();
+        lastCheck = misc::getTimeMicrosec();
       } else {
         counter++;
       }
@@ -338,12 +217,13 @@ int main() {
 #elif __linux__
     system("clear");
 #endif
-    printCameraViewInTerminal(worldNoise);
+    //std::cout << "worldNoise.getMapVisible()[0][0] == " << worldNoise.getMapVisible()[0][0] << std::endl;
+    misc::printByteMatrix(worldNoise.getMapVisible());
     std::cout << "w||a||s||d to move, any other input to exit loop:\n";
 
 
 
-    cameraPosition = processInput(window, cameraPosition);
+    worldNoise.cameraPosCentre = processInput(window, worldNoise.cameraPosCentre);
     glClearColor(
       /*
       (sin(glfwGetTime() + (3.14f / 3 * 3)) + 1.0f) / 2.0f, // red
